@@ -10,15 +10,281 @@
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/black.css">
 
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/monokai.css">
+
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
+				<section>
+					<h1>Implications of Rust Memory Management</h1>
+					<h3>Erwin Bonsma</h3>
+				</section>
+				<section>
+					<h2>Outline</h2>
+					<ul>
+						<li>Memory rules refresher</li>
+						<li>Implementing a Genetic Algorithm
+							<ul>
+								<li>Caching</li>
+							</ul>
+						</li>
+						<li>Graphs of objects</li>
+						<li>Graphs of objects</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Refresher</h2>
+					<ul>
+						<li>Ownership
+							<ul>
+								<li>Each value has a single owner</li>
+								<li>Values are dropped when the owner goes out of scope</li>
+							</ul>
+						</li>
+						<li>Borrowing. You can have:
+							<ul>
+								<li>Multiple read-only references, or</li>
+								<li>A single mutable reference</li>
+							</ul>
+						</li>
+						<li>Move vs Copy
+							<ul>
+								<li>Values on the stack are copied</li>
+								<li>Values on the heap are moved</li>
+							</ul>
+						</li>	
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Example</h2>
+						<p>Which show invocations fail to compile?</p>
+						<pre><code data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s);
+	let mut q = s;                  show(&s);
+	q.push_str("?");                show(&q);
+	foo(&mut q);                    show(&q);
+	bar(q);                         show(&q);
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Answer</h2>
+						<p>Which show invocations fail to compile?</p>
+						<pre><code data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s);
+	let mut q = s;                  // show(&s);
+	q.push_str("?");                show(&q);
+	foo(&mut q);                    show(&q);
+	bar(q);                         // show(&q);
+}
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<h2>Evolutionary Algorithms</h2>
+					<ol>
+						<li>Initialize population</li>
+						<li>Repeat:
+							<ol>
+								<li>Evaluate individuals</li>
+								<li>Terminate?</li>
+								<li>Select individuals</li>
+								<li>Recombination</li>
+								<li>Mutation</li>
+							</ol>
+						</li>
+					</ol>
+				</section>
+				<section>
+					<h2>Individual</h2>
+					has a
+					<h4>Genotype</h4>
+					which encodes a
+					<h4>Phenotype</h4>
+					which evaluates to a
+					<h4>Fitness</h4>
+				</section>
+				<section>
+					<h2>Individual in Rust</h2>
+					<pre><code data-trim>
+pub trait Genotype&ltP: Phenotype> {
+    fn express(&self) -> P;
+}
+
+pub trait Phenotype {
+    fn evaluate(&self) -> f32;
+}
+
+pub struct Individual&lt;P: Phenotype, G: Genotype&lt;P>> {
+    genotype: G,
+    phenotype: Option&lt;P>,
+    fitness: Option&lt;f32>,
+}
+</code></pre>
+				</section>
+				<section>
+					<h2>Caching</h2>
+					<ul>
+						<li>Sometimes expression is expensive</li>
+						<li>Sometimes evaluation is expensive</li>
+						<li>How to enable caching, but only when needed?<br></li>
+						<li>Complication: Cannot just use existing genotype/phenotype value as key</li>
+						</ul>
+				</section>
+				<section>
+					<h2>Option 1</h2>
+					<h3>Clone keys</h3>
+					<pre><code data-trim>
+fn evaluate_cached&lt;P: Phenotype>(
+	phenotype: &P,
+	cache: &mut HashMap&lt;P, f32>
+) -> f32 {
+	*cache.entry((*phenotype).clone()).or_insert_with_key(
+		|key| key.evaluate()
+	)
+}
+					</code></pre>
+					<ul>
+						<li>Con: Phenotypes are always cloned</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Option 2</h2>
+					<h3>Use Reference Counting</h3>
+					<pre><code data-trim>
+fn evaluate_cached&lt;P: Phenotype>(
+	phenotype: Rc&lt;P>,
+	cache: &mut HashMap&lt;Rc&lt;P>, f32>
+) -> f32 {
+	*cache.entry((*phenotype).clone()).or_insert_with_key(
+		|key| key.evaluate()
+	)
+}
+					</code></pre>
+					<ul>
+						<li>Con: Need to also use <code>Rc</code> wrapper in
+							<code>Individual</code>
+							<ul>
+								<li>but should only do this when using a cache</li>
+								<li>use <code>Rc&lt;P></code> wrapper with <code>Phenotype</code> trait</li>
+							</ul></li>
+					</ul>
+				</section>
+				<section>
+					<h2>Option 3</h2>
+					<h3>Use data-oriented approach</h3>
+					<ul>
+						<li>E.g. Use an Arena allocator
+							<ul>
+								<li>Allocate items in bulk</li>
+								<li>Reference items by index</li>
+							</ul>
+						</li>
+						<li>Pro: Improved memory usage
+							<ul>
+								<li>Faster allocation</li>
+								<li>Reduced fragmentation</li>
+							</ul>
+						</li>
+						<li>Con: Extra complexity
+							<ul>
+								<li>Indirection via Arena</li>
+								<li>Custom hashing + equality checks for keys</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						Which lines cause compilation errors?
+						<pre><code data-trim>
+let mut v = vec!(1, 2, 3);
+let mut iter = v.iter_mut();
+let v1 = iter.next().unwrap();
+let v2 = iter.next().unwrap();
+*v1 *= 3;
+*v2 *= 3;
+let v3 = iter.next().unwrap();
+println!("{:?}", v);
+*v3 *= 3;
+println!("{:?}", v);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						Which lines cause compilation errors?
+						<pre><code data-trim>
+let mut v = vec!(1, 2, 3);
+let mut iter = v.iter_mut();
+let v1 = iter.next().unwrap();
+let v2 = iter.next().unwrap();
+*v1 *= 3;
+*v2 *= 3;
+let v3 = iter.next().unwrap();
+// println!("{:?}", v);
+*v3 *= 3;
+println!("{:?}", v);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						<pre><code data-trim>
+type Link&lt;T> = Option&lt;Box&lt;Node&lt;T>>>;
+
+struct Node&lt;T> {
+	elem: T,
+	next: Link&lt;T>,
+}
+
+pub struct LinkedList&lt;T> {
+	head: Link&lt;T>,
+}
+
+pub struct IterMut&lt;'a, T: 'a>(Option&lt;&'a mut Node&lt;T>>);
+
+impl&lt;T> LinkedList&lt;T> {
+	fn iter_mut(&mut self) -> IterMut&lt;T> {
+		IterMut(self.head.as_mut().map(|node| &mut **node))
+	}
+}
+
+impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
+	type Item = &'a mut T;
+
+	fn next(&mut self) -> Option&lt;Self::Item> {
+		self.0.take().map(|node| {
+			self.0 = node.next.as_mut().map(|node| &mut **node);
+			&mut node.elem
+		})
+	}
+}
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<h2>Links</h2>
+					<ul>
+						<li>Keynote Talk: <a href="https://www.youtube.com/watch?v=aKLntZcp27M">Using Rust For Game Development by Catherine West</a></li>
+						<li>Generational Arena: <a href="https://github.com/fitzgen/generational-arena">github</a></li>
+					</ul>
+				</section>
+		</div>
 		</div>
 
 		<script src="dist/reveal.js"></script>
@@ -33,7 +299,10 @@
 				hash: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+				dependencies: [
+					{ src: 'plugin/highlight/highlight.js', async: true },
+				]
 			});
 		</script>
 	</body>
