@@ -32,7 +32,7 @@
 								<li>Caching</li>
 							</ul>
 						</li>
-						<li>Graphs of objects</li>
+						<li>Splitting borrows</li>
 						<li>Graphs of objects</li>
 					</ul>
 				</section>
@@ -62,7 +62,7 @@
 				<section>
 					<section>
 						<h2>Example</h2>
-						<p>Which show invocations fail to compile?</p>
+						<p>Which <code>show</code> invocations fail to compile?</p>
 						<pre><code data-trim>
 fn show(s: &String)    { println!("{}", s); }
 fn foo(s: &mut String) { s.push_str("!"); }
@@ -78,8 +78,8 @@ fn test() {
 						</code></pre>
 					</section>
 					<section>
-						<h2>Answer</h2>
-						<p>Which show invocations fail to compile?</p>
+						<h2>Example</h2>
+						Answer
 						<pre><code data-trim>
 fn show(s: &String)    { println!("{}", s); }
 fn foo(s: &mut String) { s.push_str("!"); }
@@ -177,8 +177,7 @@ fn evaluate_cached&lt;P: Phenotype>(
 }
 					</code></pre>
 					<ul>
-						<li>Con: Need to also use <code>Rc</code> wrapper in
-							<code>Individual</code>
+						<li>Con: Need to also use <code>Rc</code> in <code>Individual</code>
 							<ul>
 								<li>but should only do this when using a cache</li>
 								<li>use <code>Rc&lt;P></code> wrapper with <code>Phenotype</code> trait</li>
@@ -228,7 +227,7 @@ println!("{:?}", v);
 					</section>
 					<section>
 						<h2>Splitting Borrows</h2>
-						Which lines cause compilation errors?
+						Answer:
 						<pre><code data-trim>
 let mut v = vec!(1, 2, 3);
 let mut iter = v.iter_mut();
