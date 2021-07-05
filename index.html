@@ -150,7 +150,7 @@ pub struct Individual&lt;P: Phenotype, G: Genotype&lt;P>> {
 					<section>
 						<h2>Option 1</h2>
 						<h3>Clone keys</h3>
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 fn evaluate_cached&lt;P: Phenotype>(
 	phenotype: &P,
 	cache: &mut HashMap&lt;P, f32>
@@ -190,7 +190,7 @@ fn evaluate_cached&lt;P: Phenotype>(
 					<section>
 						<h2>Option 2</h2>
 						<h3>Use Reference Counting</h3>
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 fn evaluate_cached&lt;P: Phenotype>(
 	phenotype: Rc&lt;P>,
 	cache: &mut HashMap&lt;Rc&lt;P>, f32>
