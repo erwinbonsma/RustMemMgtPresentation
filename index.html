@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/black.css">
+		<link rel="stylesheet" href="css/custom.css">
 
 		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
@@ -164,22 +165,23 @@ fn evaluate_cached&lt;P: Phenotype>(
 					<section>
 						<h2>Option 1</h2>
 						<h3>Clone keys</h3>
-						<div class="mermaid" style="background-color: antiquewhite;">
-							flowchart TD
-								subgraph Individual
-									G
-									PI[P]
-									FI[fitness]
-								end
-								subgraph FitnessCache
-									m[map]
-								end
-								subgraph MapEntry
-									PE[P]
-									FE[fitness]
-								end
-								PI -. clone ..-> PE
-								m --o MapEntry
+						<img class="diagram" src="diagrams/cache-option1.svg" />
+						<div class="diagram-source">
+flowchart TD
+	subgraph Individual
+		G
+		PI[P]
+		FI[fitness]
+	end
+	subgraph FitnessCache
+		m[map]
+	end
+	subgraph MapEntry
+		PE[P]
+		FE[fitness]
+	end
+	PI -. clone ..-> PE
+	m --o MapEntry=
 						</div>
 					</section>
 				</section>
@@ -208,23 +210,24 @@ fn evaluate_cached&lt;P: Phenotype>(
 					<section>
 						<h2>Option 2</h2>
 						<h3>Use Reference Counting</h3>
-						<div class="mermaid" style="background-color: antiquewhite;">
-							flowchart TD
-								subgraph Individual
-									G
-									RcI[Rc]
-									FI[fitness]
-								end
-								subgraph FitnessCache
-									m[map]
-								end
-								subgraph MapEntry
-									RcE[Rc]
-									FE[fitness]
-								end
-								m --o MapEntry
-								RcI --> P
-								RcE --> P
+						<img class="diagram" src="diagrams/cache-option2.svg" />
+						<div class="diagram-source">
+flowchart TD
+	subgraph Individual
+		G
+		RcI[Rc]
+		FI[fitness]
+	end
+	subgraph FitnessCache
+		m[map]
+	end
+	subgraph MapEntry
+		RcE[Rc]
+		FE[fitness]
+	end
+	m --o MapEntry
+	RcI --> P
+	RcE --> P
 						</div>
 					</section>
 				</section>
@@ -256,29 +259,30 @@ fn evaluate_cached&lt;P: Phenotype>(
 					<section>
 						<h2>Option 3</h2>
 						<h3>Use data-oriented approach</h3>
-						<div class="mermaid" style="background-color: antiquewhite;">
-							flowchart TD
-								subgraph Individual
-									G
-									IdxI[P_index]
-									FI[fitness]
-								end
-								subgraph FitnessCache
-									m[map]
-								end
-								subgraph MapEntry
-									IdxE[P_index]
-									FE[fitness]
-								end
-								subgraph Arena
-									P1[P]
-									P2[P]
-									P3[P]
-									P4[P]
-								end
-								m --o MapEntry
-								IdxI --> P2
-								IdxE --> P2
+						<img class="diagram" src="diagrams/cache-option3.svg" />
+						<div class="diagram-source">
+flowchart TD
+	subgraph Individual
+		G
+		IdxI[P_index]
+		FI[fitness]
+	end
+	subgraph FitnessCache
+		m[map]
+	end
+	subgraph MapEntry
+		IdxE[P_index]
+		FE[fitness]
+	end
+	subgraph Arena
+		P1[P]
+		P2[P]
+		P3[P]
+		P4[P]
+	end
+	m --o MapEntry
+	IdxI --> P2
+	IdxE --> P2
 						</div>
 					</section>
 				</section>
