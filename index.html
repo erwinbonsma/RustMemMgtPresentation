@@ -25,13 +25,13 @@
 					<h2>Outline</h2>
 					<ul>
 						<li>Memory rules refresher</li>
+						<li>Splitting borrows</li>
 						<li>Implementing a Genetic Algorithm
 							<ul>
 								<li>Caching</li>
 							</ul>
 						</li>
 						<li>Graphs of objects</li>
-						<li>Splitting borrows</li>
 					</ul>
 				</section>
 				<section>
@@ -89,6 +89,74 @@ fn test() {
 	q.push_str("?");                show(&q);
 	foo(&mut q);                    show(&q);
 	bar(q);                         // show(&q);
+}
+						</code></pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						Which lines cause compilation errors?
+						<pre><code class="language-rust" data-trim>
+let mut v = vec!(1, 2, 3);
+let mut iter = v.iter_mut();
+let v1 = iter.next().unwrap();
+let v2 = iter.next().unwrap();
+*v1 *= 3;
+*v2 *= 3;
+let v3 = iter.next().unwrap();
+println!("{:?}", v);
+*v3 *= 3;
+println!("{:?}", v);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						Answer:
+						<pre ><code class="language-rust" data-trim>
+let mut v = vec!(1, 2, 3);
+let mut iter = v.iter_mut();
+let v1 = iter.next().unwrap();
+let v2 = iter.next().unwrap();
+*v1 *= 3;
+*v2 *= 3;
+let v3 = iter.next().unwrap();
+// println!("{:?}", v);
+*v3 *= 3;
+println!("{:?}", v);
+						</code></pre>
+					</section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						<pre><code class="language-rust" data-trim>
+type Link&lt;T> = Option&lt;Box&lt;Node&lt;T>>>;
+
+struct Node&lt;T> {
+	elem: T,
+	next: Link&lt;T>,
+}
+
+pub struct LinkedList&lt;T> {
+	head: Link&lt;T>,
+}
+
+pub struct IterMut&lt;'a, T: 'a>(Option&lt;&'a mut Node&lt;T>>);
+
+impl&lt;T> LinkedList&lt;T> {
+	fn iter_mut(&mut self) -> IterMut&lt;T> {
+		IterMut(self.head.as_mut().map(|node| &mut **node))
+	}
+}
+
+impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
+	type Item = &'a mut T;
+
+	fn next(&mut self) -> Option&lt;Self::Item> {
+		self.0.take().map(|node| {
+			self.0 = node.next.as_mut().map(|node| &mut **node);
+			&mut node.elem
+		})
+	}
 }
 						</code></pre>
 					</section>
@@ -289,74 +357,6 @@ flowchart TD
 				<section>
 					<h2>Graphs of objects</h2>
 					TODO: Generational arena
-				</section>
-				<section>
-					<section>
-						<h2>Splitting Borrows</h2>
-						Which lines cause compilation errors?
-						<pre><code class="language-rust" data-trim>
-let mut v = vec!(1, 2, 3);
-let mut iter = v.iter_mut();
-let v1 = iter.next().unwrap();
-let v2 = iter.next().unwrap();
-*v1 *= 3;
-*v2 *= 3;
-let v3 = iter.next().unwrap();
-println!("{:?}", v);
-*v3 *= 3;
-println!("{:?}", v);
-						</code></pre>
-					</section>
-					<section>
-						<h2>Splitting Borrows</h2>
-						Answer:
-						<pre ><code class="language-rust" data-trim>
-let mut v = vec!(1, 2, 3);
-let mut iter = v.iter_mut();
-let v1 = iter.next().unwrap();
-let v2 = iter.next().unwrap();
-*v1 *= 3;
-*v2 *= 3;
-let v3 = iter.next().unwrap();
-// println!("{:?}", v);
-*v3 *= 3;
-println!("{:?}", v);
-						</code></pre>
-					</section>
-					<section>
-						<h2>Splitting Borrows</h2>
-						<pre><code class="language-rust" data-trim>
-type Link&lt;T> = Option&lt;Box&lt;Node&lt;T>>>;
-
-struct Node&lt;T> {
-	elem: T,
-	next: Link&lt;T>,
-}
-
-pub struct LinkedList&lt;T> {
-	head: Link&lt;T>,
-}
-
-pub struct IterMut&lt;'a, T: 'a>(Option&lt;&'a mut Node&lt;T>>);
-
-impl&lt;T> LinkedList&lt;T> {
-	fn iter_mut(&mut self) -> IterMut&lt;T> {
-		IterMut(self.head.as_mut().map(|node| &mut **node))
-	}
-}
-
-impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
-	type Item = &'a mut T;
-
-	fn next(&mut self) -> Option&lt;Self::Item> {
-		self.0.take().map(|node| {
-			self.0 = node.next.as_mut().map(|node| &mut **node);
-			&mut node.elem
-		})
-	}
-}
-						</code></pre>
-					</section>
 				</section>
 				<section>
 					<h2>Links</h2>
