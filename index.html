@@ -30,8 +30,8 @@
 								<li>Caching</li>
 							</ul>
 						</li>
-						<li>Splitting borrows</li>
 						<li>Graphs of objects</li>
+						<li>Splitting borrows</li>
 					</ul>
 				</section>
 				<section>
@@ -54,14 +54,14 @@
 								<li>Values on the stack are copied</li>
 								<li>Values on the heap are moved</li>
 							</ul>
-						</li>	
+						</li>
 					</ul>
 				</section>
 				<section>
 					<section>
 						<h2>Example</h2>
 						<p>Which <code>show</code> invocations fail to compile?</p>
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 fn show(s: &String)    { println!("{}", s); }
 fn foo(s: &mut String) { s.push_str("!"); }
 fn bar(mut s: String)  { s.push_str("!"); }
@@ -78,7 +78,7 @@ fn test() {
 					<section>
 						<h2>Example</h2>
 						Answer
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 fn show(s: &String)    { println!("{}", s); }
 fn foo(s: &mut String) { s.push_str("!"); }
 fn bar(mut s: String)  { s.push_str("!"); }
@@ -119,7 +119,7 @@ fn test() {
 				</section>
 				<section>
 					<h2>Individual in Rust</h2>
-					<pre><code data-trim>
+					<pre><code class="language-rust" data-trim>
 pub trait Genotype&ltP: Phenotype> {
     fn express(&self) -> P;
 }
@@ -287,10 +287,14 @@ flowchart TD
 					</section>
 				</section>
 				<section>
+					<h2>Graphs of objects</h2>
+					TODO: Generational arena
+				</section>
+				<section>
 					<section>
 						<h2>Splitting Borrows</h2>
 						Which lines cause compilation errors?
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 let mut v = vec!(1, 2, 3);
 let mut iter = v.iter_mut();
 let v1 = iter.next().unwrap();
@@ -306,7 +310,7 @@ println!("{:?}", v);
 					<section>
 						<h2>Splitting Borrows</h2>
 						Answer:
-						<pre><code data-trim>
+						<pre ><code class="language-rust" data-trim>
 let mut v = vec!(1, 2, 3);
 let mut iter = v.iter_mut();
 let v1 = iter.next().unwrap();
@@ -321,7 +325,7 @@ println!("{:?}", v);
 					</section>
 					<section>
 						<h2>Splitting Borrows</h2>
-						<pre><code data-trim>
+						<pre><code class="language-rust" data-trim>
 type Link&lt;T> = Option&lt;Box&lt;Node&lt;T>>>;
 
 struct Node&lt;T> {
@@ -365,8 +369,10 @@ impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
 		</div>
 
 		<script src="dist/reveal.js"></script>
+		<!--
 		<script src="plugin/notes/notes.js"></script>
 		<script src="plugin/markdown/markdown.js"></script>
+		-->
 		<script src="plugin/highlight/highlight.js"></script>
 		<script>
 			// More info about initialization & config:
@@ -376,7 +382,7 @@ impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
 				hash: true,
 
 				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+				plugins: [ RevealHighlight ],
 				dependencies: [
 					{ src: 'plugin/highlight/highlight.js', async: true },
 				]
