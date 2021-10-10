@@ -143,7 +143,7 @@ pub struct LinkedList&lt;T> {
 pub struct IterMut&lt;'a, T: 'a>(Option&lt;&'a mut Node&lt;T>>);
 
 impl&lt;T> LinkedList&lt;T> {
-	fn iter_mut(&mut self) -> IterMut&lt;T> {
+	pub fn iter_mut(&mut self) -> IterMut&lt;T> {
 		IterMut(self.head.as_mut().map(|node| &mut **node))
 	}
 }
@@ -159,6 +159,14 @@ impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
 	}
 }
 						</code></pre>
+					</section>
+					<section>
+						<h2>Splitting Borrows</h2>
+						<ul>
+							<li><a href="https://doc.rust-lang.org/std/option/enum.Option.html"
+								>Option API</a></li>
+							<li><a href="https://doc.rust-lang.org/nomicon/borrow-splitting.html"
+								>The Rustonomicon - Splitting Borrows</a></li>
 					</section>
 				</section>
 				<section>
