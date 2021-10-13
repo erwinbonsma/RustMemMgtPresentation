@@ -24,20 +24,31 @@
 				<section>
 					<h2>Outline</h2>
 					<ul>
-						<li>Memory rules refresher</li>
+						<li>Rust refresher</li>
 						<li>Splitting borrows</li>
-						<li>Implementing a Genetic Algorithm
-							<ul>
-								<li>Intro</li>
-								<li>Intro</li>
-								<li>Caching</li>
-							</ul>
-						</li>
-						<li>Graphs of objects</li>
+						<li>Implementing a Genetic Algorithm</li>
+						<li>Rust and WASM</li>
+						<li>Demo</li>
 					</ul>
 				</section>
 				<section>
-					<h2>Refresher</h2>
+					<h2>Rust features</h2>
+					<ul>
+						<li>Designed for performance and safety</li>
+						<li>Compile-time memory safety
+							<ul>
+								<li>borrow checker, ownership</li>
+							</ul></li>
+						<li>Standard dev tool chain
+							<ul>
+								<li>build system, package manager, test runner, etc</li>
+							</ul></li>
+						<li>Small runtime</li>
+						<li>Polymorphism via traits and generics</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Memory rules refresher</h2>
 					<ul>
 						<li>Ownership
 							<ul>
@@ -378,7 +389,29 @@ flowchart TD
 						</ul>
 					</section>
 				</section>
-		</div>
+				<section>
+					<h2>Rust in web apps</h2>
+					<ul>
+						<li><a href="https://rustwasm.github.io/docs/book/introduction.html">Rust WASM book</a>
+							<ul>
+								<li><a href="https://rustwasm.github.io/docs/book/why-rust-and-webassembly.html"
+									>Why Rust and Web Assembly?</a></li>
+								<li><a href="https://rustwasm.github.io/docs/book/what-is-webassembly.html"
+									>What is Web Assembly?</a></li>
+								<li><a href="https://rustwasm.github.io/docs/book/game-of-life/implementing.html"
+									>Game of Life tutorial</a></li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section>
+					<h2>Demo time</h2>
+					<ul>
+						<li><a href="https://erwinbonsma.github.io/www/ga-of-life/">ga-of-life (web app)</a></li>
+						<li><a href="https://github.com/erwinbonsma/ga-of-life">ga-of-life (source)</a></li>
+					</ul>
+				</section>
+			</div>
 		</div>
 
 		<script src="dist/reveal.js"></script>
