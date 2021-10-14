@@ -33,7 +33,11 @@
 				</section>
 				<section>
 					<h2>Rust features</h2>
+
 					<ul>
+						<img src="images/rust-book.jpg"
+							style="float: right; margin-right: 15px;"
+							width="190" height="250">
 						<li>Designed for performance and safety</li>
 						<li>Compile-time memory safety
 							<ul>
@@ -403,6 +407,30 @@ flowchart TD
 							</ul>
 						</li>
 					</ul>
+				</section>
+				<section>
+					<h2>GA of Life</h2>
+					<h3>Deployment diagram</h3>
+					<img class="diagram" src="diagrams/app-deployment.svg" />
+					<div class="diagram-source">
+flowchart LR
+	subgraph Main[Main Thread]
+		GA_UI[GA UI]
+		CA_UI[CA UI]
+		CA_Wrapper[CA js]
+		CA
+	end
+	subgraph Worker[Worker Thread]
+		GA_Wrapper[GA js]
+		WorkerGA[GA]
+		WorkerCA[CA]
+	end
+	GA_UI ----> GA_Wrapper
+	GA_Wrapper -- Rust --> WorkerGA
+	WorkerGA --> WorkerCA
+	CA_UI --> CA_Wrapper
+	CA_Wrapper -- Rust --> CA
+					</div>
 				</section>
 				<section>
 					<h2>Demo time</h2>
