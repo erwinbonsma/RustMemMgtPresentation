@@ -314,13 +314,19 @@ pub struct Individual&lt;P: Phenotype, G: Genotype&lt;P>> {
 </code></pre>
 				</section>
 				<section>
-					<h2>Caching</h2>
+					<h2>Improving performance</h2>
 					<ul>
-						<li>Sometimes expression is expensive</li>
-						<li>Sometimes evaluation is expensive</li>
-						<li>How to enable caching, but only when needed?<br></li>
-						<li>Complication: Cannot just use existing genotype/phenotype value as key</li>
-						</ul>
+						<li>Problem: evaluation can be expensive</li>
+						<li>Solution: caching</li>
+					</ul>
+
+					<p>
+					Questions:
+					<ul>
+						<li>How to optionally enable caching?<br></li>
+						<li>How to satisfy Rust's ownership rules?</li>
+					</ul>
+					</p>
 				</section>
 				<section>
 					<section>
@@ -331,13 +337,19 @@ fn evaluate_cached&lt;P: Phenotype>(
 	phenotype: &P,
 	cache: &mut HashMap&lt;P, f32>
 ) -> f32 {
-	*cache.entry((*phenotype).clone()).or_insert_with_key(
-		|key| key.evaluate()
-	)
+	match cache.get(phenotype) {
+		Some(fitness) => *fitness,
+		None => {
+			let fitness = phenotype.evaluate();
+			cache.insert(phenotype.clone(), fitness);
+			fitness
+		}
+	}
 }
 						</code></pre>
 						<ul>
-							<li>Con: Phenotypes are always cloned</li>
+							<li>Con: Phenotypes are cloned</li>
+							<li>Con: Two key lookups on cache miss</li>
 						</ul>
 					</section>
 					<section>
@@ -378,11 +390,8 @@ fn evaluate_cached&lt;P: Phenotype>(
 }
 						</code></pre>
 						<ul>
-							<li>Con: Need to also use <code>Rc</code> in <code>Individual</code>
-								<ul>
-									<li>but should only do this when using a cache</li>
-									<li>use <code>Rc&lt;P></code> wrapper with <code>Phenotype</code> trait</li>
-								</ul></li>
+							<li>Con: Need to update <code>Individual</code> to use <code>Rc</code></li>
+							<li>Con: This incurs overhead even when disabling cache</li>
 						</ul>
 					</section>
 					<section>
@@ -483,14 +492,14 @@ flowchart TD
 								<li><a href="https://rustwasm.github.io/docs/book/what-is-webassembly.html"
 									>What is Web Assembly?</a></li>
 								<li><a href="https://rustwasm.github.io/docs/book/game-of-life/implementing.html"
-									>Game of Life tutorial</a></li>
+									>Tutorial: Game of Life</a></li>
 							</ul>
 						</li>
 					</ul>
 				</section>
 				<section>
 					<h2>GA of Life</h2>
-					<h3>Deployment diagram</h3>
+					<h3>Deployment</h3>
 					<img class="diagram" src="diagrams/app-deployment.svg" />
 					<div class="diagram-source">
 flowchart LR
