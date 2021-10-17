@@ -187,25 +187,104 @@ impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
 					</section>
 				</section>
 				<section>
-					<h2>Genetic Algorithms</h2>
-					<p>TODO: Overview image</p>
+					<section>
+						<h2>Genetic Algorithms</h2>
+						<h3>Entities</h3>
+						<img class="diagram" src="diagrams/ga-entities.svg" />
+						<div class="diagram-source">
+classDiagram
+	class Population {
+		Vec~Individual~ individuals
+	}
+	class Individual {
+		Genotype genotype
+		Option~Phenotype~ phenotype
+		Option~f32~ fitness
+	}
+	Population --* "*" Individual
+	Individual --* Genotype
+	Individual --* Phenotype
+						</div>
+					</section>
+					<section>
+						<h2>Genetic Algorithms</h2>
+						<h3>Expression</h3>
+						<img class="diagram" src="diagrams/ga-expression.svg" />
+						<div class="diagram-source">
+classDiagram
+	class Individual {
+		Genotype genotype
+		Option~Phenotype~ phenotype
+		Option~f32~ fitness
+	}
+	class Expressor {
+		express(Genotype) Phenotype
+	}
+	Individual --* Genotype
+	Individual --* Phenotype
+	Expressor --> Genotype
+	Expressor --> Phenotype
+						</div>
+					</section>
+					<section>
+						<h2>Genetic Algorithms</h2>
+						<h3>Evaluation</h3>
+						<img class="diagram" src="diagrams/ga-evaluation.svg" />
+						<div class="diagram-source">
+classDiagram
+	class Individual {
+		Genotype genotype
+		Option~Phenotype~ phenotype
+		Option~f32~ fitness
+	}
+	class Evaluator {
+		evaluate(Phenotype) f32
+	}
+	Individual --* Genotype
+	Individual --* Phenotype
+	Evaluator --> Phenotype
+						</div>
+					</section>
+					<section>
+						<h2>Genetic Algorithms</h2>
+						<h3>Selection</h3>
+						<img class="diagram" src="diagrams/ga-selection.svg" />
+						<div class="diagram-source">
+classDiagram
+	class Population {
+		Vec~Individual~ individuals
+	}
+	class Individual {
+		Genotype genotype
+		Option~Phenotype~ phenotype
+		Option~f32~ fitness
+	}
+	class Selection {
+		select_from(Population) Individual
+	}
+	Population --* "*" Individual
+	Selection --> Population
+	Selection --> Individual
+						</div>
+					</section>
+					<section>
+						<h2>Genetic Algorithms</h2>
+						<h3>Genetic Operations</h3>
+						<img class="diagram" src="diagrams/ga-genetic-operations.svg" />
+						<div class="diagram-source">
+classDiagram
+    class Mutation {
+        mutate(Genotype) Genotype
+    }
+    class Recombination {
+        recombine(Genotype, Genotype) Genotype
+    }
+	Mutation --> Genotype
+	Recombination --> Genotype
+						</div>
+					</section>
 				</section>
-				<section>
-					<h2>Genetic Algorithms</h2>
-					<h3>Basic Algorithm</h3>
-					<ol>
-						<li>Initialize population</li>
-						<li>Repeat:
-							<ol>
-								<li>Evaluate individuals</li>
-								<li>Terminate?</li>
-								<li>Select individuals</li>
-								<li>Recombination</li>
-								<li>Mutation</li>
-							</ol>
-						</li>
-					</ol>
-				</section>
+				<!--
 				<section>
 					<h2>Individual</h2>
 					has a
@@ -215,6 +294,7 @@ impl&lt;'a, T> Iterator for IterMut&lt;'a, T> {
 					which evaluates to a
 					<h4>Fitness</h4>
 				</section>
+				-->
 				<section>
 					<h2>Individual in Rust</h2>
 					<pre><code class="language-rust" data-trim>
