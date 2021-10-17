@@ -94,7 +94,24 @@ fn test() {
 					</section>
 					<section>
 						<h2>Example</h2>
-						Answer
+						Answer (1/5)
+						<pre><code class="language-rust" data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s); // OK
+	let mut q = s;                  show(&s);
+	q.push_str("?");                show(&q);
+	foo(&mut q);                    show(&q);
+	bar(q);                         show(&q);
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Example</h2>
+						Answer (2/5)
 						<pre><code class="language-rust" data-trim>
 fn show(s: &String)    { println!("{}", s); }
 fn foo(s: &mut String) { s.push_str("!"); }
@@ -102,10 +119,61 @@ fn bar(mut s: String)  { s.push_str("!"); }
 
 fn test() {
 	let s = String::from("Hello");  show(&s);
-	let mut q = s;                  // show(&s);
+	let mut q = s;                  // show(&s); // Not OK
 	q.push_str("?");                show(&q);
 	foo(&mut q);                    show(&q);
-	bar(q);                         // show(&q);
+	bar(q);                         show(&q);
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Example</h2>
+						Answer (3/5)
+						<pre><code class="language-rust" data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s);
+	let mut q = s;
+	q.push_str("?");                show(&q); // OK
+	foo(&mut q);                    show(&q);
+	bar(q);                         show(&q);
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Example</h2>
+						Answer (4/5)
+						<pre><code class="language-rust" data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s);
+	let mut q = s;
+	q.push_str("?");                show(&q);
+	foo(&mut q);                    show(&q); // OK
+	bar(q);                         show(&q);
+}
+						</code></pre>
+					</section>
+					<section>
+						<h2>Example</h2>
+						Answer (5/5)
+						<pre><code class="language-rust" data-trim>
+fn show(s: &String)    { println!("{}", s); }
+fn foo(s: &mut String) { s.push_str("!"); }
+fn bar(mut s: String)  { s.push_str("!"); }
+
+fn test() {
+	let s = String::from("Hello");  show(&s);
+	let mut q = s;
+	q.push_str("?");                show(&q);
+	foo(&mut q);                    show(&q);
+	bar(q);                         // show(&q); // Not OK
 }
 						</code></pre>
 					</section>
@@ -113,8 +181,8 @@ fn test() {
 				<section>
 					<section>
 						<h2>Splitting Borrows</h2>
-						Which lines cause compilation errors?
-						<pre><code class="language-rust" data-trim>
+						Which line causes a compilation error?
+						<pre><code class="language-rust" data-trim data-line-numbers>
 let mut v = vec!(1, 2, 3);
 let mut iter = v.iter_mut();
 let v1 = iter.next().unwrap();
@@ -129,8 +197,8 @@ println!("{:?}", v);
 					</section>
 					<section>
 						<h2>Splitting Borrows</h2>
-						Answer:
-						<pre ><code class="language-rust" data-trim>
+						Answer: Line 8
+						<pre ><code class="language-rust" data-trim data-line-numbers>
 let mut v = vec!(1, 2, 3);
 let mut iter = v.iter_mut();
 let v1 = iter.next().unwrap();
